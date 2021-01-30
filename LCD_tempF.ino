@@ -14,7 +14,7 @@ int lcdRows = 4;
 LiquidCrystal_I2C lcd(0x27, lcdColumns, lcdRows);  
 DHT dht(DHTPIN, DHTTYPE);
 const char* ssid     = "Quinn and Cole";
-const char* password = "ClevelandLulu";
+const char* password = "CleaverlandLuLu";
 
 const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = -28800;
