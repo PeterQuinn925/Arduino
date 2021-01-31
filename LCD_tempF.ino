@@ -2,6 +2,7 @@
 #include "DHT.h"
 #include <WiFi.h>
 #include "time.h"
+#include <WiFiUdp.h>
 
 #define DHTPIN 23     // Digital pin connected to the DHT sensor
 #define DHTTYPE DHT11   // DHT 11
@@ -14,11 +15,17 @@ int lcdRows = 4;
 LiquidCrystal_I2C lcd(0x27, lcdColumns, lcdRows);  
 DHT dht(DHTPIN, DHTTYPE);
 const char* ssid     = "Quinn and Cole";
-const char* password = "CleaverlandLuLu";
+const char* password = "ClevelandLulu";
 
 const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = -28800;
-const int   daylightOffset_sec = 3600;
+int   daylightOffset_sec = 0;//3600;
+const char* streamId   = "tempdata.txt";
+char  replyPacket[] = "success!";
+
+WiFiUDP Udp;
+unsigned int localPort = 1026;
+unsigned int localUDPPort = 1026;
 
 void setup(){
   Serial.begin(9600);
@@ -37,7 +44,8 @@ void setup(){
   }
   Serial.println("");
   Serial.println("WiFi connected.");
-  
+  Udp.begin(localPort);
+  IPAddress ip(10,0,0,20); //hardcoded to Raspi  
   // Init and get the time
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
  // printLocalTime();
@@ -46,9 +54,6 @@ void setup(){
     Serial.println("Failed to obtain time");
   }
 
-  //disconnect WiFi as it's no longer needed
-  WiFi.disconnect(true);
-  WiFi.mode(WIFI_OFF);
 }
 
 void loop(){
@@ -95,4 +100,16 @@ void loop(){
   lcd.print("RH:");
   lcd.print(h);
   lcd.print("%");
+  //send data to UDP
+  char f_char[7]="999.99";
+  char rh_char[]="99";
+  dtostrf(f,6,2,f_char);
+  dtostrf(h,2,1,rh_char);
+//  replyPacket = f_char + "," + rh_char
+  IPAddress ip(10,0,0,20); //hardcoded to Raspi  
+  Udp.beginPacket(ip,localUDPPort);
+  Udp.print(f);
+  Udp.print(",");
+  Udp.print(rh_char);
+  Udp.endPacket();
 }
