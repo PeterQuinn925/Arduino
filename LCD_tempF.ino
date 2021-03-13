@@ -14,8 +14,8 @@ int lcdRows = 4;
 // if you don't know your display address, run an I2C scanner sketch
 LiquidCrystal_I2C lcd(0x27, lcdColumns, lcdRows);
 DHT dht(DHTPIN, DHTTYPE);
-const char* ssid     = "Quinn and Cole";
-const char* password = "ClevelandLulu";
+const char* ssid     = "Quinn and Cole3";
+const char* password = "Cleverino";
 
 const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = -28800;
@@ -39,9 +39,10 @@ void setup() {
   Serial.print("Connecting to ");
   Serial.println(ssid);
   WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
+  Serial.println(WiFi.status());
+ while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    Serial.print(".");
+    Serial.println(WiFi.status());
   }
   Serial.println("");
   Serial.println("WiFi connected.");
@@ -59,8 +60,11 @@ void setup() {
 
 void loop() {
   counter++;
-  if (counter % 3600 == 0)
+  //if (counter % 600 == 0)
+  Serial.println(WiFi.status());
+  if (WiFi.status() == WL_CONNECTION_LOST)
   { //reset the wifi just in case
+    Serial.println("Wifi disconnected. retrying.");
     WiFi.disconnect();
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED) {
