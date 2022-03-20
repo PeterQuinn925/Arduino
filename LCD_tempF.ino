@@ -1,3 +1,7 @@
+/*Use NodeMCU-32S in adafruit's ESP32
+if not available, add the following to File/Preferences/Additional Boards Manaager
+https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+*/
 #include <LiquidCrystal_I2C.h>
 #include "DHT.h"
 #include <WiFi.h>
@@ -14,12 +18,13 @@ int lcdRows = 4;
 // if you don't know your display address, run an I2C scanner sketch
 LiquidCrystal_I2C lcd(0x27, lcdColumns, lcdRows);
 DHT dht(DHTPIN, DHTTYPE);
-const char* ssid     = "Quinn and Cole3";
-const char* password = "Cleverino";
+//const char* ssid     = "Quinn and Cole";
+const char* ssid     = "Quinn and Cole 3";
+const char* password = "ClevelandRocks";
 
 const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = -28800;
-int   daylightOffset_sec = 0;//3600;
+int   daylightOffset_sec = 3600;//3600;
 const char* streamId   = "tempdata.txt";
 char  replyPacket[] = "success!";
 
@@ -37,15 +42,23 @@ void setup() {
   // turn on LCD backlight
   lcd.backlight();
   Serial.print("Connecting to ");
+  lcd.setCursor(0, 0);
+  lcd.print(ssid);
   Serial.println(ssid);
   WiFi.begin(ssid, password);
   Serial.println(WiFi.status());
+
  while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.println(WiFi.status());
   }
   Serial.println("");
   Serial.println("WiFi connected.");
+  lcd.print(" Connected");
+  delay(5000);
+  lcd.setCursor(0,0);
+  lcd.print("                          ");
+
   Udp.begin(localPort);
   IPAddress ip(10, 0, 0, 20); //hardcoded to Raspi
   // Init and get the time
@@ -62,9 +75,9 @@ void loop() {
   counter++;
   //if (counter % 600 == 0)
   Serial.println(WiFi.status());
-  if (WiFi.status() == WL_CONNECTION_LOST)
+  if (WiFi.status() != 3 || counter % 100 == 0 )
   { //reset the wifi just in case
-    Serial.println("Wifi disconnected. retrying.");
+    Serial.println("Wifi reconnecting.");
     WiFi.disconnect();
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED) {
@@ -104,8 +117,7 @@ void loop() {
   Serial.print(t);
   Serial.print(F("°C "));
   Serial.println(f);
-  lcd.setCursor(0, 0);
-  // print message
+    // print message
   lcd.setCursor(0, 0);
   lcd.print(time_disp);
   //  lcd.setCursor(0,1);
