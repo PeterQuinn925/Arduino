@@ -1,11 +1,14 @@
-Bluetooth info:
--unamed-
-28:CD:C1:02:7C:05
-
 Decided that the regular Android Studio was overkill/too complex and found https://appinventor.mit.edu the MIT app inventor - a “no code” android app studio, plus an example on how to do it. https://www.youtube.com/watch?v=RvbWl8rZOoQ
+The app is 
 
 Main.py is python code for Raspberry pi pico
+ble_advertising.py defines some useful functions
+
+I can't remember where I got the base code. I didn't write most of this code.
 
 Connect Pico with vcc/ground to vcc/ground connections on relay with Pin 16 on the pico connected to the In connection on the relay.
 
 Connect COM and ON on relay to the switch wires on the garage door opener
+
+.aia is the App Inventor project
+.apk is the app itself
