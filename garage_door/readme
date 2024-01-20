@@ -3,3 +3,9 @@ Bluetooth info:
 28:CD:C1:02:7C:05
 
 Decided that the regular Android Studio was overkill/too complex and found https://appinventor.mit.edu the MIT app inventor - a “no code” android app studio, plus an example on how to do it. https://www.youtube.com/watch?v=RvbWl8rZOoQ
+
+Main.py is python code for Raspberry pi pico
+
+Connect Pico with vcc/ground to vcc/ground connections on relay with Pin 16 on the pico connected to the In connection on the relay.
+
+Connect COM and ON on relay to the switch wires on the garage door opener
