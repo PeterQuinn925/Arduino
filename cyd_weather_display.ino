@@ -6,14 +6,7 @@
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 #include <HTTPClient.h>
-/*
 
-Show the outside temp in white if between 60 and 90, Blue below 60, and Red above 90
-Show the inside temp in white if between 68 and 74, Blue below 68, and Red above 74
-Show an arrow giving the direction of movement. If diff is >.1 degF then up arrow. If diff less than -.1 down arrow
-show forecast high/low?
-
-*/
 int DST = 1;  //1 for Daylight Savings Time, 0 for no Daylight Savings Time
 
 TFT_eSPI tft = TFT_eSPI();  // Invoke library, pins defined in User_Setup.h
@@ -133,7 +126,7 @@ void callback(char* topic, byte* message, unsigned int length) {
       const char* F2 = doc["properties"]["periods"][0]["detailedForecast"];
       forecastName = F1;
       forecastDetail = F2;
-      Serial.print(forecastDetail);
+      //Serial.print(forecastName);
     }
   } else {
     Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
@@ -172,7 +165,6 @@ void loop() {
   int h = timeClient.getHours();
   int m = timeClient.getMinutes();
   epoch = timeClient.getEpochTime();
-  Serial.println(epoch);
 
   char timedisp[10] = "         ";
   char ampm[] = "AM";
@@ -186,8 +178,7 @@ void loop() {
 
   Serial.println(timedisp);
 
-  Serial.println("looping");
-  // The standard ADAFruit font still works as before
+  tft.fillScreen(TFT_BLACK);
   tft.setTextColor(TFT_WHITE);
   tft.setCursor(12, 5);
   char nchar[30];
@@ -210,8 +201,8 @@ void loop() {
     tft.setTextColor(TFT_BLUE, TFT_BLACK);
   }
   tft.drawString(nchar, 80, 25, 4);
-  //erase previous arrows
-  tft.drawWideLine(160, 68, 160, 25, 20, TFT_BLACK, TFT_BLACK);
+  //erase previous arrows - don't need anymore
+  //tft.drawWideLine(160, 68, 160, 25, 20, TFT_BLACK, TFT_BLACK);
 
   if (outTemp > lastoutTemp) {
     tft.drawWideLine(160, 42, 160, 25, 3, TFT_RED, TFT_BLACK);
@@ -255,15 +246,35 @@ void loop() {
     lastinTemp = inTemp;
     lastepoch = epoch;
   }
+  //display time
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
-  tft.drawRightString("            ", 260, 10, 2);
   tft.drawRightString(timedisp, 260, 10, 2);
+
   //display forecast
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
-  tft.drawString("                            ", 10, 90, 3);
-  tft.drawString(forecastName, 10, 90, 3);
-  tft.drawString("                                                                                             ", 10, 100, 3);
-  tft.drawString(forecastDetail, 10, 100, 2);
+  tft.setFreeFont(&FreeSans9pt7b);  //values from https://github.com/Bodmer/TFT_eSPI/blob/master/examples/320%20x%20240/Free_Font_Demo/Free_Fonts.h
+  tft.drawString(forecastName, 10, 98);
+  //Serial.println(forecastName);
+
+  int f_len = forecastDetail.length();
+  if (f_len > 0) {      //forecast not set yet
+    int lineleng = 40;  //but we're going to look for a space up to 6 characters early
+    int f_lines = f_len / lineleng;
+    int last_end = -1;
+    // how many lines of n characters
+    for (int i = 0; i < f_lines + 1; i++) {
+      int start = last_end + 1;
+      int end = start + lineleng;  //first guess
+      if (end > f_len) {
+        end = f_len;
+      }
+      while (forecastDetail.substring(end, end + 1) != " ") {  //look for a space to break the line on
+        end--;
+      }
+      last_end = end;
+      tft.drawString(forecastDetail.substring(start, end), 10, 120 + (i * 20), 2);
+    }
+  }
 
   delay(10000);
 }
