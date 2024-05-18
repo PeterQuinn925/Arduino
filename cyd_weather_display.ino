@@ -29,6 +29,7 @@ long epoch = 0;
 long lastepoch = 0;
 String forecastName = "";
 String forecastDetail = "";
+String lastDetail = "foo";
 
 // Add your MQTT Broker IP address, example:
 //const char* mqtt_server = "192.168.1.144";
@@ -155,8 +156,8 @@ void reconnect() {
 
 void loop() {
   //tft.fillScreen(TFT_GREEN);
-  delay(1000);
-
+  //delay(1000);
+  char blanks[40] = "                                       ";
   if (!client.connected()) {
     reconnect();
   }
@@ -177,8 +178,10 @@ void loop() {
   sprintf_P(timedisp, PSTR("%d:%02d %s"), h, m, ampm);
 
   Serial.println(timedisp);
-
-  tft.fillScreen(TFT_BLACK);
+  if (epoch - lastepoch > 300) {
+    tft.fillScreen(TFT_BLACK);  //overkill to do this every loop, and it's distracting to flicker. Only doing it once every 5 minutes now.
+    lastDetail = "nonsense";
+  }
   tft.setTextColor(TFT_WHITE);
   tft.setCursor(12, 5);
   char nchar[30];
@@ -201,8 +204,8 @@ void loop() {
     tft.setTextColor(TFT_BLUE, TFT_BLACK);
   }
   tft.drawString(nchar, 80, 25, 4);
-  //erase previous arrows - don't need anymore
-  //tft.drawWideLine(160, 68, 160, 25, 20, TFT_BLACK, TFT_BLACK);
+  //erase previous arrows. Looks like this is really needed if the direction flips from going up to going down during one period.
+  tft.drawWideLine(160, 68, 160, 25, 20, TFT_BLACK, TFT_BLACK);
 
   if (outTemp > lastoutTemp) {
     tft.drawWideLine(160, 42, 160, 25, 3, TFT_RED, TFT_BLACK);
@@ -253,29 +256,32 @@ void loop() {
   //display forecast
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
   tft.setFreeFont(&FreeSans9pt7b);  //values from https://github.com/Bodmer/TFT_eSPI/blob/master/examples/320%20x%20240/Free_Font_Demo/Free_Fonts.h
+  tft.drawString(blanks, 10, 98);
   tft.drawString(forecastName, 10, 98);
   //Serial.println(forecastName);
-
-  int f_len = forecastDetail.length();
-  if (f_len > 0) {      //forecast not set yet
-    int lineleng = 40;  //but we're going to look for a space up to 6 characters early
-    int f_lines = f_len / lineleng;
-    int last_end = -1;
-    // how many lines of n characters
-    for (int i = 0; i < f_lines + 1; i++) {
-      int start = last_end + 1;
-      int end = start + lineleng;  //first guess
-      if (end > f_len) {
-        end = f_len;
+  if (forecastDetail != lastDetail) {
+    int f_len = forecastDetail.length();
+    if (f_len > 0) {      //forecast not set yet
+      int lineleng = 40;  //but we're going to look for a space up to 6 characters early
+      int f_lines = f_len / lineleng;
+      int last_end = -1;
+      // how many lines of n characters
+      for (int i = 0; i < f_lines + 1; i++) {
+        int start = last_end + 1;
+        int end = start + lineleng;  //first guess
+        if (end > f_len) {
+          end = f_len;
+        }
+        while (forecastDetail.substring(end, end + 1) != " ") {  //look for a space to break the line on
+          end--;
+        }
+        last_end = end;
+        tft.drawString(blanks, 10, 120 + (i * 20), 2);
+        tft.drawString(forecastDetail.substring(start, end), 10, 120 + (i * 20), 2);
       }
-      while (forecastDetail.substring(end, end + 1) != " ") {  //look for a space to break the line on
-        end--;
-      }
-      last_end = end;
-      tft.drawString(forecastDetail.substring(start, end), 10, 120 + (i * 20), 2);
     }
+    lastDetail = forecastDetail;
   }
-
   delay(10000);
 }
 /*
