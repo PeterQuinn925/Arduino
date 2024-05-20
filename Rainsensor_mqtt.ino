@@ -7,9 +7,9 @@
 
 DFRobot_RainfallSensor_I2C Sensor(&Wire);
 
-//char* ssid = "Quinn and Cole";
-char* ssid     = "Quinn and Cole 3";
-char* password = "ClevelandLulu";
+//char* ssid = "QuinnandCole";
+char* ssid     = "QuinnandCole3";
+char* password = "CleavelandLu1u";
 WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
 //const char broker[] = "10.0.0.11";
