@@ -18,8 +18,8 @@ byte blue = 0;
 byte state = 0;
 unsigned int colour = red << 11;
 
-const char* ssid = "Quinn and Cole";
-const char* password = "ClevelandLulu";
+const char* ssid = "Quinn and Col3";
+const char* password = "CleavelandLulu";
 
 double inTemp = -99.9;
 double outTemp = -99.9;
