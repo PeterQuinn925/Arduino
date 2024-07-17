@@ -4,7 +4,9 @@ The app is
 Main.py is python code for Raspberry pi pico
 ble_advertising.py defines some useful functions
 
-I can't remember where I got the base code. I didn't write most of this code.
+From Micropython examples. https://github.com/micropython/micropython/blob/master/examples/bluetooth/ble_advertising.py
+
+Some modification, but essentially the example.
 
 Connect Pico with vcc/ground to vcc/ground connections on relay with Pin 16 on the pico connected to the In connection on the relay.
 
