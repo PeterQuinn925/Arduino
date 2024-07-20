@@ -81,7 +81,7 @@ def start():
 
     def on_rx(v):
         print("RX", v)
-        if b'Open' in v:
+        if b'DoorOpen' in v:
            OpenDoor()
 
     p.on_write(on_rx)
