@@ -28,7 +28,7 @@ DHT dht(DHTPIN, DHTTYPE);
 
 //const char* ssid = "Quinn and Cole";
 const char* ssid = "Quinn and Cole 3";
-const char* password = "ClevelandLulu";
+const char* password = "CleverinoLulu";
 
 const char* ntpServer = "pool.ntp.org";
 int daylightOffset_sec = 3600;
