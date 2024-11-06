@@ -18,8 +18,8 @@ byte blue = 0;
 byte state = 0;
 unsigned int colour = red << 11;
 
-const char* ssid = "XXXXX";
-const char* password = "YYYYYYYYY";
+const char* ssid = "Quinn and Cole";
+const char* password = "CleverladLulu";
 
 double inTemp = -99.9;
 double outTemp = -99.9;
@@ -47,7 +47,9 @@ void setup(void) {
 
   Serial.begin(115200);
   setup_wifi();
-
+  getDST(DST);
+  Serial.print("DST =");
+  Serial.println(DST);
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
   timeClient.begin();
@@ -76,6 +78,31 @@ void setup_wifi() {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+}
+void getDST(int dst) {
+  HTTPClient http;
+  http.begin("http://10.0.0.11:8000/api/dst");
+  int httpCode = http.GET();
+
+  // httpCode will be negative on error
+  if (httpCode > 0) {
+    // HTTP header has been send and Server response header has been handled
+    Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+
+    // file found at server
+    if (httpCode == HTTP_CODE_OK) {
+      String payload = http.getString();
+      Serial.println(payload);
+      StaticJsonDocument<1000> doc;
+      DeserializationError error = deserializeJson(doc, payload);
+
+      dst = doc["dst"];
+      DST=dst;
+      Serial.println(DST);
+    }
+  } else {
+    Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+  }
 }
 void callback(char* topic, byte* message, unsigned int length) {
 
