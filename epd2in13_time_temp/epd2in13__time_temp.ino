@@ -28,7 +28,7 @@ DHT dht(DHTPIN, DHTTYPE);
 
 //const char* ssid = "Quinn and Cole";
 const char* ssid = "Quinn and Cole 3";
-const char* password = "CleverinoLulu";
+const char* password = "CleverladLulu";
 
 const char* ntpServer = "pool.ntp.org";
 int daylightOffset_sec = 3600;
@@ -199,10 +199,10 @@ void getDST(int dst) {
   Serial.println(statusCode);
   Serial.print("Response: ");
   Serial.println(response);
+  StaticJsonDocument<200> dstDoc;
+  DeserializationError error = deserializeJson(dstDoc, response);
 
-  DeserializationError error = deserializeJson(doc, response);
-
-  dst = doc["dst"];
+  dst = dstDoc["dst"];
   DST = dst;
   Serial.println(DST);
 }
