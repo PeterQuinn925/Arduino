@@ -1,4 +1,5 @@
 #include <SPI.h>
+//##include <pgmspace.h>
 #include "epd2in13_V3.h"
 #include "epdpaint.h"
 #include "imagedata.h"
@@ -14,7 +15,7 @@
 
 #define COLORED 0
 #define UNCOLORED 1
-#define DHTPIN 2       // Digital pin connected to the DHT sensor
+#define DHTPIN 2       // Digital pin connected to the DHT sensor - set to 2 on real machine. Set to 23 on test device
 #define DHTTYPE DHT11  // DHT 11
 
 int DST = 1;                          // Daylight savings 0 = Off, 1 = On. TODO:Automate this
@@ -28,7 +29,7 @@ DHT dht(DHTPIN, DHTTYPE);
 
 //const char* ssid = "Quinn and Cole";
 const char* ssid = "Quinn and Cole 3";
-const char* password = "CleverladLulu";
+const char* password = "Clever1andLulu";
 
 const char* ntpServer = "pool.ntp.org";
 int daylightOffset_sec = 3600;
@@ -170,7 +171,11 @@ void loop() {
   */
   mqttClient.poll();
   float tempF = dht.readTemperature(true);
+  float humid = dht.readHumidity();
+
   doc["inTemp"] = tempF;
+  doc["humid"] = humid;
+
   char mqtt_msg[256];
   serializeJson(doc, mqtt_msg);
   if (mqttClient.connected()) {
