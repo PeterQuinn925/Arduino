@@ -184,18 +184,35 @@ void runUSBMode() {
 
 // --- Battery mode: get fix, send, sleep ---
 void runBatteryMode() {
-  unsigned long gpsStart = millis();
-  while (millis() - gpsStart < 90000) {
-    while (Serial1.available() > 0) {
-      GPS.encode(Serial1.read());
-    }
-    if (GPS.location.isValid() && GPS.time.isValid()) break;
+
+unsigned long gpsStart = millis();
+int validFixCount = 0;
+const int REQUIRED_FIXES = 3;  // Tune this: 2-3 is a good balance
+
+double lastLat = 0, lastLng = 0;
+time_t lastEpoch = 0;
+
+while (millis() - gpsStart < 90000) {
+  while (Serial1.available() > 0) {
+    GPS.encode(Serial1.read());
   }
 
   if (GPS.location.isValid() && GPS.time.isValid()) {
-    float  lat   = GPS.location.lat();
-    float  lng   = GPS.location.lng();
-    time_t epoch = getGPSEpoch(GPS);
+    // Only count if location has actually updated since last fix
+    if (GPS.location.isUpdated()) {
+      validFixCount++;
+      lastLat   = GPS.location.lat();
+      lastLng   = GPS.location.lng();
+      lastEpoch = getGPSEpoch(GPS);
+    }
+    if (validFixCount >= REQUIRED_FIXES) break;
+  }
+}
+
+if (validFixCount > 0) {
+  float lat   = lastLat;
+  float lng   = lastLng;
+  time_t epoch = lastEpoch;
 
     bool isConnected = connectAll();
     if (isConnected) {
@@ -225,8 +242,15 @@ void setup() {
   tzset();
 
   // Init display AFTER power pin is HIGH
+  //in theory, this is the backlight pin and this should turn it off
+  pinMode(21, OUTPUT);
+  digitalWrite(21, HIGH);  // Backlight OFF (cathode pin — HIGH = off)
   st7735.st7735_init();
-  st7735.st7735_fill_screen(ST7735_BLACK);
+  digitalWrite(ST7735_CS_Pin, LOW);
+  digitalWrite(ST7735_DC_Pin, LOW);  // Command mode
+  SPI.transfer(0x28);                // DISPOFF
+  digitalWrite(ST7735_CS_Pin, HIGH);
+  //st7735.st7735_fill_screen(ST7735_BLACK);
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
 //  bool usbPower = isUSBPowered(); Removed, doesn't work. hardcoding
 bool usbPower = false; //normal is false. true for debugging
