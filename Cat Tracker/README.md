@@ -24,25 +24,24 @@ The chosen implementation is to use a Heltec ESP32 Tracker that has GPS/GNSS, Wi
 The Heltec gets the location from GPS and if the Wifi is available, sends it to a cloud server via MQTT. If Wifi is not available, it stores it until the Wifi is available and then sends the stored data along to the server. The cloud server runs the Mosquitto MQTT server. There is another process on the server that runs the Mosquitto client and subscribes to these messages. When one arrives, it puts it in the database. A Grafana server is also running on this cloud server. At any time, a user can view the location data plotted on a map via a standard web browser. MQTT isn’t strictly needed here. A different transport mechanism could have been used since it’s a single message and single subscriber. However, MQTT is easy and convenient.
 ## Security implications.
 This is a low risk situation and security requirements are minimal. There is no real value or harm if someone gets the cat location data. While there is a TLS option for MQTT and we could implement HTTPS for the Grafana dashboards, there’s no need for it in this implementation.
-## Heltec device
-### Programming
-Started with the example GPS code
-Display the lat/long and time on the display
-Next, copied code from a previous project to add Wifi and send the data via MQTT. Always online, no backfill yet.
-Trouble getting it to use the serial output. Never solved.
-Trouble getting it to use GPS without the display found out you had to turn the display on for it to work. I think the GPS and display use the same power pin. Found some workarounds to minimize the display for low power usage.
-Implemented storing the lat/long/time data when no Wifi and backfilling when there is. Claude wrote most of this code. Critical that it survives deepsleep.
-Getting the battery to work at all (e.g. solder the connector to a working battery, not a broken one)
-Battery lasts ~1 hr when fully awake and constantly updating the display
+## Programming the Heltec
+I started with the example GPS code that displays the lat/long and time from the GPS system on the built in display. Then, I copied some code I had from a previous project to add Wifi connection and send the data to a MQTT server that I have already. This was an always online option with no backfill or anything, just prove out sending the data and seeing the quality of the position.
+I wasted some time trying to use the serial monitor in the Arduino UI. It doesn’t when using the GPS and I never figured out why. There were a number of solutions posted online or suggested by Claude.AI but none worked.
+I also wasted some time trying to get the GPS to work with the display turned off. In the final design, I don’t want the display because I want to save power. While I was able to minimize the time the display is on, I wasn’t able to completely turn it off. It appears that the GPS and the display share the same power pin and you must initialize the display for the GPS to work. 
+Next I implemented storing the lat/long/time data when there is no Wifi connection and backfilling when it comes back in range. One of the critical parts of the solution is that it survive ESP32 deep sleep. So, it couldn’t just store it in a C data structure. Claude.ai suggested using LittleFS and wrote most of this code.
+## Test backend server
+At this point I had MQTT lat/long/time data going to a local MQTT server. I could see the messages arriving but no way to visualize them. I did look up one lat/long pair on the map to validate that it was in the right place, but that would be super tedious to do for more than a single value. I already have a local server that has Mosquitto and have weather data going via this server to an Influx database which I then visualize with Grafana. This made a perfect test system.
+![2026-04-05_15-14-40](https://github.com/user-attachments/assets/9fa3088c-d2a5-41c2-8d2c-3915a5e9dd2e)
+Copying most of the code from my weather system, I created a little python program that would subscribe to the MQTT messages and write out the data to the Influx database. Once this was flowing I created a new Grafana dashboard to show dots on a map. I used Influxdb because that’s what I had handy. When I implemented it for the deployed system, I used SQLite.  I thought that Influx was overkill for this scenario and SQLite a better fit. There’s such a small amount of data and that the advantages of a specialized time series database didn’t make sense.
+## Battery Power
+Now that I had a system that would work without Wifi, I did some testing. I plugged it into a USB battery made for charging phones on the go and took it out of range. This all worked fine, but obviously not the optimum solution. 
+I had a couple of 150mAh LiPo batteries left over from previous projects, so I grabbed one. The connector that the Heltec uses is different than the “standard?” ones that I had. One of the things that came with the device was a connector for the battery. It’s similar in form but much smaller. I cut off the old connector and soldered in wires to the new connector. Frustratingly, the battery did not work. It did not appear to charge or power the device. I was able to confirm with my multimeter that the battery never put out any voltage. I suspected the battery itself was bad, or possibly my soldering was faulty. I had a second battery and used that to confirm my suspictions. I cut off the Heltec battery connector from the suspected bad battery and, without soldering, twisted the wires of the new battery to the connector. When plugging this into the Heltec, the charging LED lit right up - and it ran off the battery at least for a few seconds. I gleefully unplugged it and made a permanent solder connection.
+Without any optimization, the battery lasts ~1 hr when fully awake and updating the display once a minute. As I expected, this was not good enough and I needed to optimize it by using the ESP32 deep sleep mode and turning off the display.
+## Low Power/Deep Sleep
 Getting low power/deep sleep to work
 Getting GPS to be more accurate after deep sleep
 After optimizations, battery now lasts ~6 hrs. Might want to swap out the battery for a slightly larger one for more run time, but let’s deploy it first.
 Trying to get it to detect battery vs USB power. Goal here was to show the battery fill level, connection stats, if it’s backfilling, etc when the device is plugged in. And not have it sleep when plugged in. Spent the better part of a day doing this before figuring it out I would need to do it with additional hardware. Granted, it would be a couple of resistors and some soldering, but it wasn’t worth the effort.
-## Test system - existing Mosquitto, InfluxDB and Grafana
-Getting the timestamp to work right when backfilling
-Getting Grafana to display a map with the dots on it.
-Getting Grafana to display different colors for different timestamps (TODO!)
-Writing code to subscribe to MQTT and push the data to InfluxDB
 ## 3D printing a case
 Design in openSCAD
 2 parts base and screws
