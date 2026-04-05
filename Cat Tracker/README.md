@@ -4,7 +4,7 @@
 My daughter has an adventurous cat and we want to know where it goes. She lives in a ground floor apartment  in a small town in Oregon. The apartment has a small rocky hill and some fields behind it. The cat goes out to the rocks and it is impossible to see where he goes. 
 	I want to build a collar that tracks his position and puts the locations on a map. He always comes in after a few hours so there’s no need to go find him. There’s no need for real time tracking.
 This is a hobby project, so I want to do this as cheaply as possible with no recurring fees or subscriptions. Also, I intend to deploy it at my daughter’s. I live an 8 hour drive away and visit maybe two or three times a year. While I can get my daughter to reboot something and she will want to look at a map and see what her cat has been up to, she is a busy working adult. I need to be able to do any admin remotely.
-<<picture of archie>>
+*picture of archie the cat goes here*
 ## Architectural tradeoffs
 The way this needs to work is there is a battery powered device in the cat’s collar that collects the location and transmits it to a server someplace, using some wireless technology. The server can be connected to via the web and show a map of where the cat has been.
 There are commercially available options for this kind of thing. Some that may meet the requirements and some that don’t. Let’s look at some of them.
