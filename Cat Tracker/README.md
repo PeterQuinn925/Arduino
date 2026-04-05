@@ -16,8 +16,10 @@ This would be a good solution except there is no coverage out in the fields wher
 - The last major decision is where and how to host the server. If I was going to implement this at my house, it would be easy. I would use an existing on-prem server in the form of a Raspberry PI. I have a spare Raspberry PI Zero 2 that I considered using. The other alternative is one of the cloud services. I considered the usual hyperscalers. These all required a subscription after a trial period. I looked at some other minor players and found that Oracle Cloud has an “always free” tier that would suit my needs. Since I wanted remote administration, hosting in a cloud service for free was the winner.
 ## System Design
 
-The chosen implementation is to use a Heltec ESP32 Tracker that has GPS/GNSS, Wifi, LoRa radio, a display screen and Lipo battery management. https://heltec.org/project/wireless-tracker/ List price is $23.
+![arch](https://github.com/user-attachments/assets/6b2ec311-65b2-4ed4-a4d0-cb4353a5dfa6)
 
+The chosen implementation is to use a Heltec ESP32 Tracker that has GPS/GNSS, Wifi, LoRa radio, a display screen and Lipo battery management. https://heltec.org/project/wireless-tracker/ List price is $23.
+![heltec](https://github.com/user-attachments/assets/0e6fd37c-e893-4b8e-9655-43119b7419b5)
 
 The Heltec gets the location from GPS and if the Wifi is available, sends it to a cloud server via MQTT. If Wifi is not available, it stores it until the Wifi is available and then sends the stored data along to the server. The cloud server runs the Mosquitto MQTT server. There is another process on the server that runs the Mosquitto client and subscribes to these messages. When one arrives, it puts it in the database. A Grafana server is also running on this cloud server. At any time, a user can view the location data plotted on a map via a standard web browser. MQTT isn’t strictly needed here. A different transport mechanism could have been used since it’s a single message and single subscriber. However, MQTT is easy and convenient.
 ## Security implications.
