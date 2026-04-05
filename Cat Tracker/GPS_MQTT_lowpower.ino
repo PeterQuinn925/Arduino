@@ -20,7 +20,7 @@ HT_st7735 st7735;
 #define ADC_CTRL_PIN 37
 
 const char* ssid     = "Quinn and Cole";
-const char* password = "CleverladLulu";
+const char* password = "XXXXXXXXXX";
 
 //IPAddress broker(10, 0, 0, 11); //local Raspi4
 IPAddress broker(161,153,21,231); //Oracle Cloud server
