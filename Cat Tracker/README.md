@@ -46,12 +46,14 @@ Trying to get it to detect battery vs USB power. Goal here was to show the batte
 Design in openSCAD
 2 parts base and screws
 ## H2 Setting up a Cloud server
-Struggles with Oracle Linux, switch to Ubuntu which I’m much more familiar with
-How to get to be able to SSH into the server (configuring it for public IP and generating a public/private key pair)
-Install mosquitto, mosquitto-clients, Grafana OSS, sqlite3, pahoMQTT, sqlite plugin for Grafana
-Struggles getting the holes in the firewall for Grafana
-Open the firewall for MQTT and enable MQTT to accept data via the port. Reprogram the device to send data to the cloud server.
-Write code to subscribe to MQTT and push the data to SQLite db <done, made into a service>
+I created an account on Oracle Cloud. I first created an instance using Oracle Linux with basically the default options. When doing so, it prompted me to create and download a public and private keys. I struggled a bit to figure out how to get it to create a public IP address, but with some help from Claude.ai, I was able to do so. Then, using the public key, I was able to SSH in. I found that Oracle Linux didn’t have the tools that I needed to install Mosquitto - apt isn’t available, there’s yum instead, but I was unable to get Mosquitto installed using it. After a bit, I gave up and terminated that instance and created a new one using Ubuntu.
+### Installing software
+With Ubuntu I was able to use the tools I’m used to (apt) to install Mosquitto, mosquitto-clients, Grafana OSS, sqlite, pahoMQTT, and the SQLite plugin for Grafana. PahoMQTT is the library for using MQTT in Python.
+I next tried to access the Grafana site via the URL and failed. There were multiple security hoops to jump through first. As I suck at network security stuff, I had Claude.ai help. I needed to open the ports in the Linux instance. I needed to create security rules in Oracle Cloud to allow MQTT and Grafana access.
+### Processing MQTT Data
+Now that I was able to see the Grafana site, I next needed some data. I reprogrammed the Heltec device to use the Oracle Cloud IP address instead of my local Mosquitto server address. Next, I created a copy of the python program that I was previously using to subscribe to MQTT and write out InfluxDB on this server and modified it for SQLite. It first creates the database file and table, if it doesn’t already exist and insert values for lat/long and time. After testing it, I made it into a service. I did run into some minor issues with permissions on the database file - it was a bit tricky to make it accessible to both my python code (user ubuntu) and Grafana (user grafana).
+### Grafana Dashboard
+put the query used here
 Create a dashboard in Grafana showing the SQLite data <half done, need to make the colors change based on time. TODO>
 Give access to the Grafana instance to the ultimate user of the system and see how they like it.
 Field test on the my local cat Murky
