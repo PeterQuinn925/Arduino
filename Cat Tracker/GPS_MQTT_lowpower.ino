@@ -23,7 +23,7 @@ const char* ssid     = "Quinn and Cole";
 const char* password = "XXXXXXXXXX";
 
 //IPAddress broker(10, 0, 0, 11); //local Raspi4
-IPAddress broker(161,153,21,231); //Oracle Cloud server
+IPAddress broker("archiecat.duckdns.org"); //Oracle Cloud server
 IPAddress local_IP(10, 0, 0, 150);
 IPAddress gateway(10, 0, 0, 1);
 IPAddress subnet(255, 255, 255, 0);
