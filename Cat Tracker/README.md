@@ -53,8 +53,16 @@ I next tried to access the Grafana site via the URL and failed. There were multi
 ### Processing MQTT Data
 Now that I was able to see the Grafana site, I next needed some data. I reprogrammed the Heltec device to use the Oracle Cloud IP address instead of my local Mosquitto server address. Next, I created a copy of the python program that I was previously using to subscribe to MQTT and write out InfluxDB on this server and modified it for SQLite. It first creates the database file and table, if it doesn’t already exist and insert values for lat/long and time. After testing it, I made it into a service. I did run into some minor issues with permissions on the database file - it was a bit tricky to make it accessible to both my python code (user ubuntu) and Grafana (user grafana).
 ### Grafana Dashboard
-put the query used here
-Create a dashboard in Grafana showing the SQLite data <half done, need to make the colors change based on time. TODO>
+To set up Grafana, I needed to install the SQLite plugin and create a data source to use it. The Grafana UI is pretty straightforward to use. The only gotcha here was making sure the actual file was readable (and I think the directory also needed to be writeable) by the grafana user on the cloud server. Once the data source tested out, I created a new dashboard and a new panel as a Geomap with the following query:
+~~~
+SELECT lat,lng,ts as time, ts - MIN(ts) OVER () as age from location 
+WHERE time >= $__from / 1000 and time < $__to / 1000
+~~~
+Set layer1 as markers This will show dots for the locations. It kind of ends up looking like a heat map. If you want to show the age of the dots as different colors, use the age in the color. I also created a second panel with the same query but with the layer of type *Route* that shows the path of the tracker.
+
+### Fix hardcoded IP address - DuckDNS
+I am not sure how permanent the IP address associated with the Oracle Cloud server is. If it ever changes after I deploy the device, I will be out of luck. So, I found a free simple DNS service called DuckDNS, created an account and a domain. I then updated the Heltec device script to use the DuckDNS DNS URL. If the IP address changes, I'll just have to update the DuckDNS entry and it will be good to go.
+
 Give access to the Grafana instance to the ultimate user of the system and see how they like it.
 Field test on the my local cat Murky
 Fixing the inevitable problems <<picture of Murky as the Beta Tester>>
