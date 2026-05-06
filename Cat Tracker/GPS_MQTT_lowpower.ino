@@ -20,10 +20,11 @@ HT_st7735 st7735;
 #define ADC_CTRL_PIN 37
 
 const char* ssid     = "Quinn and Cole";
-const char* password = "XXXXXXXXXX";
+const char* password = "ClevelandLulu";
 
 //IPAddress broker(10, 0, 0, 11); //local Raspi4
-const char* broker = "archiethecat.duckdns.org"; //using DuckDNS to get to Oracle Cloud server
+//IPAddress broker(161,153,21,231); //Oracle Cloud server
+const char* broker = "archiethecat.duckdns.org"; //using DuckDNS
 IPAddress local_IP(10, 0, 0, 150);
 IPAddress gateway(10, 0, 0, 1);
 IPAddress subnet(255, 255, 255, 0);
@@ -49,6 +50,7 @@ bool connectAll() {
     if (WiFi.status() != WL_CONNECTED) return false;
   }
   if (!mqttClient.connected()) {
+    mqttClient.setKeepAliveInterval(120);
     if (!mqttClient.connect(broker, port)) return false;
   }
   return true;
