@@ -43,8 +43,9 @@ Getting GPS to be more accurate after deep sleep
 After optimizations, battery now lasts ~6 hrs. Might want to swap out the battery for a slightly larger one for more run time, but let’s deploy it first.
 Trying to get it to detect battery vs USB power. Goal here was to show the battery fill level, connection stats, if it’s backfilling, etc when the device is plugged in. And not have it sleep when plugged in. Spent the better part of a day doing this before figuring it out I would need to do it with additional hardware. Granted, it would be a couple of resistors and some soldering, but it wasn’t worth the effort.
 ## 3D printing a case
-Design in openSCAD
-2 parts base and screws
+I designed the case in OpenSCAD. It's an open source CAD modeling tool where you write code to create objects rather than draw them with a mouse. For a simple part this this, it's pretty easy. I designed it in two parts - the main body and a simple top to be screwed on. After printing, the hole for the USB C connector wasn't quite big enough. The USB spec says it's 8.3mm wide and the hole in the cad model is 9mm so the print must have shrunk a small amount since it doesn't quite fit. I enlarged it slightly with a dremel. 
+Thank you Mana https://manadream.shop/ for 3D printing the case.
+I bought a cat collar at the local pet store and attached it with...
 ## H2 Setting up a Cloud server
 I created an account on Oracle Cloud. I first created an instance using Oracle Linux with basically the default options. When doing so, it prompted me to create and download a public and private keys. I struggled a bit to figure out how to get it to create a public IP address, but with some help from Claude.ai, I was able to do so. Then, using the public key, I was able to SSH in. I found that Oracle Linux didn’t have the tools that I needed to install Mosquitto - apt isn’t available, there’s yum instead, but I was unable to get Mosquitto installed using it. After a bit, I gave up and terminated that instance and created a new one using Ubuntu.
 ### Installing software
