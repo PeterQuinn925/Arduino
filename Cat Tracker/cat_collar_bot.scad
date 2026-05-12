@@ -12,6 +12,8 @@
 overallX = 75;
 overallY = 35;
 tophalfZ = 15;
+hole_r = 1;
+hole_offset = 2;
 
 difference() {
 cube([overallX,overallY,tophalfZ],center=true);
@@ -19,6 +21,14 @@ translate([0,0,2])
     cube([66,30,15],center=true);//hole for device & batt
 translate([-overallX/2,0,2])
     cube([10,9,3],center=true);//hole for USB
+translate([overallX/2-hole_offset,overallY/2-hole_offset,-6])
+    cylinder(20,hole_r,hole_r);
+translate([-overallX/2+hole_offset,overallY/2-hole_offset,-6])
+    cylinder(20,hole_r,hole_r);
+translate([-overallX/2+hole_offset,-overallY/2+hole_offset,-6])
+    cylinder(20,hole_r,hole_r);
+translate([overallX/2-hole_offset,-overallY/2+hole_offset,-6])
+    cylinder(20,hole_r,hole_r);
 }
 //make a hole for the battery or more accuratly, fill it.
 translate([14,0,-4])
