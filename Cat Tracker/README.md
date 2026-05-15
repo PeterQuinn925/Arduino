@@ -1,3 +1,4 @@
+<img width="4012" height="1073" alt="PXL_20260515_210456391" src="https://github.com/user-attachments/assets/de6bc699-b2c2-4c4e-a579-2be832b880ff" />
 **WORK IN PROGRESS**
 
 ## Problem statement
