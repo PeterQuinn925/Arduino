@@ -1,4 +1,5 @@
 
+
 **WORK IN PROGRESS**
 
 ## Problem statement
@@ -69,7 +70,7 @@ Set layer1 as markers This will show dots for the locations. It kind of ends up 
 ### Fix hardcoded IP address - DuckDNS
 I am not sure how permanent the IP address associated with the Oracle Cloud server is. If it ever changes after I deploy the device, I will be out of luck. So, I found a free simple DNS service called DuckDNS, created an account and a domain. I then updated the Heltec device script to use the DuckDNS DNS URL. If the IP address changes, I'll just have to update the DuckDNS entry and it will be good to go.
 ## Field Testing
-<img src="https://github.com/user-attachments/assets/dc5d0845-3fc9-4024-9e42-c87489d88ec3" width="300" height="200"><figcaption>Beta Tester</figcaption>
+<img width="1970" height="1070" alt="PXL_20260515_223339094" src="https://github.com/user-attachments/assets/a452ce78-9b9f-444a-94f0-6ae0d5437c86" />
 The Beta tester was not thrilled with the collar initially.
 
 Give access to the Grafana instance to the ultimate user of the system and see how they like it.
