@@ -3,10 +3,10 @@
 //  Arduino Nano
 //
 //  Wiring:
-//   Gate 1 inputs : D2(A1), D3(B1), D4(C1)   output: A0(Y1)
-//   Gate 2 inputs : D5(A2), D6(B2), D7(C2)   output: A1(Y2)
-//   Gate 3 inputs : D8(A3), D9(B3), D10(C3)  output: A2(Y3)
-//   VCC  -> 5V  |  GND -> GND
+//   Gate 1 inputs : D2(1A)[1], D3(1B)[2], D4(1C)[13]   output: A0(1Y)[12]
+//   Gate 2 inputs : D5(2A)[3], D6(2B)[4], D7(2C)[5]   output: A1(2Y)[6]
+//   Gate 3 inputs : D8(3A)[9], D9(3B)[10], D10(3C)[11]  output: A2(3Y)[8]
+//   VCC  -> 5V[14]  |  GND -> GND[7]
 //
 //  The NOR truth table for each gate:
 //   A B C | Y
@@ -116,9 +116,9 @@ void setup() {
   }
 
   // Configure output sense pins as INPUTs
-  pinMode(GATE1_OUTPUT, INPUT);
-  pinMode(GATE2_OUTPUT, INPUT);
-  pinMode(GATE3_OUTPUT, INPUT);
+  pinMode(GATE1_OUTPUT, INPUT_PULLUP);
+  pinMode(GATE2_OUTPUT, INPUT_PULLUP);
+  pinMode(GATE3_OUTPUT, INPUT_PULLUP);
 
   delay(100);  // let power rails stabilise
 
