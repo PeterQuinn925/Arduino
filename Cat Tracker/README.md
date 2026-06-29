@@ -79,6 +79,7 @@ I am not sure how permanent the IP address associated with the Oracle Cloud serv
 ## Field Testing
 <img width="1970" height="1070" alt="PXL_20260515_223339094" src="https://github.com/user-attachments/assets/a452ce78-9b9f-444a-94f0-6ae0d5437c86" />
 The Beta tester was not thrilled with the collar initially.
+
 ## Delivery
 I created a username/login for my daughter to be able to view the map and emailed her the info. When I arrived at her appartment, I reprogrammed the device to use her WiFi access point and passwork. Initially it didn't connect. Her internet provider defaults to 5Ghz Wifi and the ESP32 doesn't support that band. She was able to switch her network to have an alternate access point with the 2.4 Ghz band that the Heltec device supports. After doing that, it still didn't work and I was puzzled for a while why not. After thinking, googling and reviewing the code, I realized that I had left in a pre-defined UP address, DNS address, etc from my home network. I didn't really need these, but I had added them while troubleshooting issues with my local network. Anyway, after removing these, it connected to the network, and after putting it outside where it could get GPS it successfully sent data through to MQTT and Grafana on the server.
 
