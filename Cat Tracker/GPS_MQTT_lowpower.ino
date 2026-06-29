@@ -15,20 +15,21 @@ HT_st7735 st7735;
 #define VGNSS_CTRL        3
 #define DISPLAY_POWER_PIN 21
 #define uS_TO_S_FACTOR    1000000ULL
-#define TIME_TO_SLEEP     60  // seconds
+#define TIME_TO_SLEEP     120  // seconds
 #define SEND_INTERVAL     60000  // ms between live sends in USB mode
 #define ADC_CTRL_PIN 37
 
-const char* ssid     = "Quinn and Cole";
-const char* password = "CleverladLulu";
+const char* ssid     = "DON. HQ. Archie";
+const char* password = "puttherealpasswordhere";
 
 //IPAddress broker(10, 0, 0, 11); //local Raspi4
 //IPAddress broker(161,153,21,231); //Oracle Cloud server
 const char* broker = "archiethecat.duckdns.org"; //using DuckDNS
-IPAddress local_IP(10, 0, 0, 150);
-IPAddress gateway(10, 0, 0, 1);
-IPAddress subnet(255, 255, 255, 0);
-IPAddress dns(8, 8, 8, 8);
+//not valid for Maddy's network
+//IPAddress local_IP(10, 0, 0, 35);
+//IPAddress gateway(10, 0, 0, 1);
+//IPAddress subnet(255, 255, 255, 0);
+//IPAddress dns(8, 8, 8, 8);
 
 int port = 1883;
 const char topic[] = "location/test";
@@ -40,7 +41,6 @@ MqttClient mqttClient(wifiClient);
 bool connectAll() {
   if (WiFi.status() != WL_CONNECTED) {
     WiFi.mode(WIFI_STA);
-    WiFi.config(local_IP, gateway, subnet, dns);
     WiFi.begin(ssid, password);
     int attempts = 0;
     while (WiFi.status() != WL_CONNECTED && attempts < 20) {
@@ -49,10 +49,15 @@ bool connectAll() {
     }
     if (WiFi.status() != WL_CONNECTED) return false;
   }
-  if (!mqttClient.connected()) {
-    mqttClient.setKeepAliveInterval(120);
-    if (!mqttClient.connect(broker, port)) return false;
+  int n=0;
+  while (!mqttClient.connected() or n<5)
+  {
+    mqttClient.setKeepAliveInterval(600);
+    mqttClient.connect(broker, port);
+    delay(500);
+    n++;
   }
+  if (!mqttClient.connected() != MQTT_SUCCESS) return false;
   return true;
 }
 
@@ -190,7 +195,7 @@ void runBatteryMode() {
 
 unsigned long gpsStart = millis();
 int validFixCount = 0;
-const int REQUIRED_FIXES = 3;  // Tune this: 2-3 is a good balance
+const int REQUIRED_FIXES = 1;  // Tune this: 2-3 is a good balance
 
 double lastLat = 0, lastLng = 0;
 time_t lastEpoch = 0;
@@ -200,7 +205,7 @@ while (millis() - gpsStart < 90000) {
     GPS.encode(Serial1.read());
   }
 
-  if (GPS.location.isValid() && GPS.time.isValid() && GPS.hdop.hdop() < 2.0) {
+  if (GPS.location.isValid() && GPS.time.isValid() ) {
     // Only count if location has actually updated since last fix
     if (GPS.location.isUpdated()) {
       validFixCount++;
@@ -210,6 +215,7 @@ while (millis() - gpsStart < 90000) {
     }
     if (validFixCount >= REQUIRED_FIXES) break;
   }
+  delay(200);
 }
 
 if (validFixCount > 0) {
@@ -263,9 +269,12 @@ bool usbPower = false; //normal is false. true for debugging
 
   if (usbPower) {
     runUSBMode();
+    delay(500);
+    esp_deep_sleep_start();
   } else {
     digitalWrite(DISPLAY_POWER_PIN, LOW);
     runBatteryMode();
+    delay(500);
     esp_deep_sleep_start();
   }
 }
