@@ -1,12 +1,9 @@
-
-
-**WORK IN PROGRESS**
-
 ## Problem statement
 My daughter has an adventurous cat and we want to know where it goes. She lives in a ground floor apartment  in a small town in Oregon. The apartment has a small rocky hill and some fields behind it. The cat goes out to the rocks and it is impossible to see where he goes. 
 	I want to build a collar that tracks his position and puts the locations on a map. He always comes in after a few hours so there’s no need to go find him. There’s no need for real time tracking.
 This is a hobby project, so I want to do this as cheaply as possible with no recurring fees or subscriptions. Also, I intend to deploy it at my daughter’s. I live an 8 hour drive away and visit maybe two or three times a year. While I can get my daughter to reboot something and she will want to look at a map and see what her cat has been up to, she is a busy working adult. I need to be able to do any admin remotely.
-*picture of archie the cat goes here*
+<img width="3020" height="3036" alt="archie" src="https://github.com/user-attachments/assets/f846847d-bd45-4ec9-ad39-444c8bfb1918" />
+
 ## Architectural tradeoffs
 The way this needs to work is there is a battery powered device in the cat’s collar that collects the location and transmits it to a server someplace, using some wireless technology. The server can be connected to via the web and show a map of where the cat has been.
 There are commercially available options for this kind of thing. Some that may meet the requirements and some that don’t. Let’s look at some of them.
@@ -72,11 +69,10 @@ I am not sure how permanent the IP address associated with the Oracle Cloud serv
 ## Field Testing
 <img width="1970" height="1070" alt="PXL_20260515_223339094" src="https://github.com/user-attachments/assets/a452ce78-9b9f-444a-94f0-6ae0d5437c86" />
 The Beta tester was not thrilled with the collar initially.
+## Delivery
+I created a username/login for my daughter to be able to view the map and emailed her the info. When I arrived at her appartment, I reprogrammed the device to use her WiFi access point and passwork. Initially it didn't connect. Her internet provider defaults to 5Ghz Wifi and the ESP32 doesn't support that band. She was able to switch her network to have an alternate access point with the 2.4 Ghz band that the Heltec device supports. After doing that, it still didn't work and I was puzzled for a while why not. After thinking, googling and reviewing the code, I realized that I had left in a pre-defined UP address, DNS address, etc from my home network. I didn't really need these, but I had added them while troubleshooting issues with my local network. Anyway, after removing these, it connected to the network, and after putting it outside where it could get GPS it successfully sent data through to MQTT and Grafana on the server.
 
-Give access to the Grafana instance to the ultimate user of the system and see how they like it.
-
-Fixing the inevitable problems
-Installation on site with Archie
+So, now it's just a question of putting the collar on the cat and letting him do his thing. If I get an interesting updates, I'll post them here.
 
 
 
